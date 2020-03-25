@@ -1,0 +1,5 @@
+﻿  Scheduler.cpp
+C:\Users\mathe\source\repos\Project4\Project4\Scheduler.cpp(84,27): warning C4018: '<': incompatibilidade de signed/unsigned
+C:\Users\mathe\source\repos\Project4\Project4\Scheduler.cpp(107,27): warning C4018: '<': incompatibilidade de signed/unsigned
+C:\Users\mathe\source\repos\Project4\Project4\Scheduler.cpp(119,27): warning C4018: '<': incompatibilidade de signed/unsigned
+  Project4.vcxproj -> C:\Users\mathe\source\repos\Project4\Debug\Project4.exe
