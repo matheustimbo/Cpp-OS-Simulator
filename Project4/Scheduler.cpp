@@ -63,7 +63,7 @@ public:
             std::this_thread::sleep_for(std::chrono::seconds(1));
             thread scheduleThread(&Scheduler::runSchedulingAlgorithm, this);
 
-            //scheduleThread.join();
+            scheduleThread.join();
         }
     }
 
@@ -79,19 +79,22 @@ public:
         core->setCurrentProcess(NULL);
     }
 
-    int get_num_empty_cores() {
-        int coresAvailable = 0;
-        for (int i = 0; i < getCpu()->getCores().size(); i++) {
-            if (getCpu()->getCores()[i]->getCurrentProcess() != NULL) {
-                coresAvailable++;
-            }
-        }
-        return coresAvailable;
-    }
+    
 
     void fifo_scheduler() {
-        cout << "Numero de cores vazios" << endl;
-        cout << get_num_empty_cores() << endl;
+        
+        for (int i = 0; i < getCpu()->get_num_empty_cores(); i++) {
+            if (getReadyQueue().size() > 0) {
+                //cout << "primeiro processo ready: ";
+                //cout << getReadyQueue()[0] << endl;
+                getCpu()->getAnEmptyCore()->setCurrentProcess(getReadyQueue()[0]);
+                getReadyQueue().erase(getReadyQueue().begin());
+            }
+        }
+        cout << "Numero de cores vazios: ";
+        cout << getCpu()->get_num_empty_cores() << endl;
+        print_queue();
+        print_cores();
     }
 
     void shortest_job_first() {

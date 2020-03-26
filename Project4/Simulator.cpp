@@ -69,7 +69,7 @@ int main() {
     vector<Core*>* cores = new vector<Core*>;
     Simulator* simulator = new Simulator(4, 10, enum_scheduling_algorithm::fifo);
 
-    simulator->batch_process_init(5);
+    simulator->batch_process_init(20);
     simulator->getKernel()->run();
     
     int seconds = 0;
