@@ -185,6 +185,7 @@ public:
         for (Core* core : cpu->getCores()) {
             if (core->getCurrentProcess() != NULL) {
                 if (core->getCurrentProcess()->getQuantumCount() >= dQuantum) {
+                    core->getCurrentProcess()->setQuantumCount(0);
                     ready_queue.push_back(core->getCurrentProcess());
                     core->setCurrentProcess(NULL);
                 }
@@ -195,7 +196,11 @@ public:
     void print_queue() {
         cout << "FILA: ----------" << endl;
         for (Process* process : ready_queue) {
-            cout << "[Id: " << process->getProcessId() << " , Time: " << process->getTotalTime() - process->getReamainingTime() << "/" << process->getTotalTime() << "]" << endl;
+            cout << "[Id: " << process->getProcessId() << " , Time: " << process->getTotalTime() - process->getReamainingTime() << "/" << process->getTotalTime();;
+            if (getSchedulingAlgorithm() == enum_scheduling_algorithm::round_robin) {
+                cout << ", quantum: " << process->getQuantumCount() << "/" << dQuantum;
+            }
+            cout << "]" << endl;
         }
         cout << "----------" << endl;
     }
