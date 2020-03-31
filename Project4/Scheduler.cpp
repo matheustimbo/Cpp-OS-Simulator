@@ -30,8 +30,8 @@ public:
         return ready_queue;
     }
 
-    void setReadyQueue(vector<Process*> readyQueue) {
-        ready_queue = readyQueue;
+    void setReadyQueue(vector<Process*> pReadyQueue) {
+        ready_queue = pReadyQueue;
     }
 
     enum_scheduling_algorithm getSchedulingAlgorithm() {
@@ -47,24 +47,29 @@ public:
     }
 
     void runSchedulingAlgorithm() {
-        if (getSchedulingAlgorithm() == enum_scheduling_algorithm::fifo) {
-            fifo_scheduler();
+        int seconds = 0;
+        
+        while (true) {
+            //cout << "thread scheduler segundo t[" << seconds << "]" << endl;
+            seconds++;
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+            cout << "scheduling algorithm: " << getSchedulingAlgorithm() << endl;
+            if (getSchedulingAlgorithm() == enum_scheduling_algorithm::fifo) {
+                fifo_scheduler();
+            }
+            if (getSchedulingAlgorithm() == enum_scheduling_algorithm::round_robin) {
+                roundrobin();
+            }
+            if (getSchedulingAlgorithm() == enum_scheduling_algorithm::shortest_job) {
+                shortest_job_first();
+            }
         }
-        if (getSchedulingAlgorithm() == enum_scheduling_algorithm::round_robin) {
-            shortest_job_first();
-        }
-        if(getSchedulingAlgorithm() == enum_scheduling_algorithm::shortest_job) {
-            roundrobin();
-        }
+        
     }
 
     void run() {
-        while (true) {
-            std::this_thread::sleep_for(std::chrono::seconds(1));
-            thread scheduleThread(&Scheduler::runSchedulingAlgorithm, this);
-
-            scheduleThread.join();
-        }
+        thread scheduleThread(&Scheduler::runSchedulingAlgorithm, this);
+        scheduleThread.join();
     }
 
     void insert_process(Process* process) {
@@ -82,59 +87,138 @@ public:
     
 
     void fifo_scheduler() {
-        
-        for (int i = 0; i < getCpu()->get_num_empty_cores(); i++) {
-            if (getReadyQueue().size() > 0) {
-                //cout << "primeiro processo ready: ";
-                //cout << getReadyQueue()[0] << endl;
-                getCpu()->getAnEmptyCore()->setCurrentProcess(getReadyQueue()[0]);
-                getReadyQueue().erase(getReadyQueue().begin());
+        removeAllFinishedProcessFromReadyQueue();
+        for (Core* core : cpu->getCores()) {
+            if (core->getCurrentProcess() == NULL) {
+                if (getReadyQueue().size() > 0) {
+                    getCpu()->getAnEmptyCore()->setCurrentProcess(getReadyQueue()[0]);
+                    ready_queue.erase(ready_queue.begin());
+                }
             }
         }
-        cout << "Numero de cores vazios: ";
-        cout << getCpu()->get_num_empty_cores() << endl;
+        decrementOneSecondEachProcess();
         print_queue();
         print_cores();
     }
 
-    void shortest_job_first() {
+    void decrementOneSecondEachProcess() {
+        for (Core* core : cpu->getCores()) {
+            if (core->getCurrentProcess() != NULL) {
+                core->getCurrentProcess()->setReamainingTime(core->getCurrentProcess()->getReamainingTime() - 1);
+            }  
+        }
+    }
 
+    void removeAllFinishedProcessFromReadyQueue() {
+        for (Core* core : cpu->getCores()) {
+            if (core->getCurrentProcess() != NULL) {
+                if (core->getCurrentProcess()->getReamainingTime() == 0) {
+                    removeProcessById(core->getCurrentProcess()->getProcessId());
+                    core->setCurrentProcess(NULL);
+                }
+            }
+        }
+    }
+
+    void removeProcessById(int pId) {
+        int id = 0;
+        for (Process* process : ready_queue) {
+            if (process->getProcessId() == pId) {
+                ready_queue.erase (ready_queue.begin() + id);
+            }
+            id++;
+        }
+    }
+
+    void shortest_job_first() {
+        removeAllFinishedProcessFromReadyQueue();
+        for (Core* core : cpu->getCores()) {
+            if (core->getCurrentProcess() == NULL) {
+                if (getReadyQueue().size() > 0) {
+                    Process* shortestProcess = getShortestProcess();
+                    getCpu()->getAnEmptyCore()->setCurrentProcess(shortestProcess);
+                    removeProcessById(shortestProcess->getProcessId());
+                }
+            }
+        }
+        decrementOneSecondEachProcess();
+        print_queue();
+        print_cores();
+    }
+
+    Process* getShortestProcess() {
+        Process* shortestProcess = ready_queue[0];
+        for (Process* process : ready_queue) {
+            if (process->getTotalTime() < shortestProcess->getTotalTime()) {
+                shortestProcess = process;
+            }
+        }
+        return shortestProcess;
     }
 
     void roundrobin() {
+        removeAllFinishedProcessFromReadyQueue();
+        putQuantumMaxedBackOnQueue();
+        for (Core* core : cpu->getCores()) {
+            if (core->getCurrentProcess() == NULL) {
+                if (getReadyQueue().size() > 0) {
+                    getCpu()->getAnEmptyCore()->setCurrentProcess(getReadyQueue()[0]);
+                    ready_queue.erase(ready_queue.begin());
+                }
+            }
+        }
+        incrementQuantum();
+        decrementOneSecondEachProcess();
+        print_queue();
+        print_cores();
+    }
 
+    void incrementQuantum() {
+        for (Core* core : cpu->getCores()) {
+            if (core->getCurrentProcess() != NULL) {
+                core->getCurrentProcess()->setQuantumCount(core->getCurrentProcess()->getQuantumCount() + 1);
+            }
+        }
+    }
+
+    void putQuantumMaxedBackOnQueue() {
+        for (Core* core : cpu->getCores()) {
+            if (core->getCurrentProcess() != NULL) {
+                if (core->getCurrentProcess()->getQuantumCount() >= dQuantum) {
+                    ready_queue.push_back(core->getCurrentProcess());
+                    core->setCurrentProcess(NULL);
+                }
+            }
+        }
     }
 
     void print_queue() {
-        cout << "FILA: ";
-        for (int i = 0; i < ready_queue.size(); i++) {
-            cout << "[ID: ";
-            cout << ready_queue[i]->getProcessId();
-            cout << " , TIME: ";
-            cout << ready_queue[i]->getReamainingTime();
-            cout << "], ";
+        cout << "FILA: ----------" << endl;
+        for (Process* process : ready_queue) {
+            cout << "[Id: " << process->getProcessId() << " , Time: " << process->getTotalTime() - process->getReamainingTime() << "/" << process->getTotalTime() << "]" << endl;
         }
-        cout << "" << endl;
+        cout << "----------" << endl;
     }
 
     void print_cores() {
-        cout << "CORES: ";
-        for (int i = 0; i < getCpu()->getCores().size(); i++) {
-            cout << "[COREID: ";
-            cout << i;
-            cout << ", ";
-            if (getCpu()->getCores()[i]->getCurrentProcess() == NULL) {
+        cout << "CORES: -------------------" << endl;
+        int id = 0;
+        for (Core* core : cpu->getCores()) {
+            cout << "[Core ";
+            cout << id;
+            cout << ", Process:";
+            if (core->getCurrentProcess() == NULL) {
                 cout << "CORE_VAZIO]";
-            }
-            else {
-                cout << "[ID: ";
-                cout << getCpu()->getCores()[i]->getCurrentProcess()->getProcessId();
-                cout << " , TIME: ";
-                cout << getCpu()->getCores()[i]->getCurrentProcess()->getReamainingTime();
+            } else {
+                cout << "[id: " << core->getCurrentProcess()->getProcessId() << ", time: " << core->getCurrentProcess()->getTotalTime() - core->getCurrentProcess()->getReamainingTime() << "/" << core->getCurrentProcess()->getTotalTime();
+                if (getSchedulingAlgorithm() == enum_scheduling_algorithm::round_robin) {
+                    cout << ", quantum: " << core->getCurrentProcess()->getQuantumCount() << "/" << dQuantum;
+                }
                 cout << "], ";
             }
-            
+            id++;
+            cout << endl;
         }
-        cout << "" << endl;
+        cout << "---------------" << endl << endl;
     }
 };

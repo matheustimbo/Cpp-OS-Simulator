@@ -9,6 +9,7 @@ using namespace std;
 
 
 class Simulator {
+private:
     Kernel* kernel;
     int processor_cores_number;
 
@@ -20,8 +21,6 @@ class Simulator {
 
     }
 
-    void run() {
-    }
 public:
 
     enum_scheduling_algorithm scheduling_algorithm;
@@ -41,7 +40,7 @@ public:
     }
 
     void create_random_process() {
-        kernel->create_process(id_count, rand() % 21);
+        kernel->create_process(id_count, (rand() % 21)+1);
         id_count++;
     }
 
@@ -57,31 +56,29 @@ public:
         id_count = id;
     }
 
-
+    void run() {
+        batch_process_init(15);
+        thread kernelThread(&Kernel::run, getKernel());
+        kernelThread.join();
+    }
 };
 
 void teste(Simulator* simulator) {
-    simulator->getKernel()->getScheduler()->print_queue();
-    simulator->getKernel()->getScheduler()->print_cores();
+    int seconds = 0;
+    while (true) {
+        //cout << "thread simulator segundo t[" << seconds << "]" << endl;
+        seconds++;
+        simulator->create_random_process();
+        //simulator->create_random_process();
+        //simulator->getKernel()->getScheduler()->print_queue();
+        //simulator->getKernel()->getScheduler()->print_cores();
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
 }
 
 int main() {
-    vector<Core*>* cores = new vector<Core*>;
-    Simulator* simulator = new Simulator(4, 10, enum_scheduling_algorithm::fifo);
-
-    simulator->batch_process_init(20);
-    simulator->getKernel()->run();
-    
-    int seconds = 0;
-
-    while (true) {
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-        seconds = seconds + 1;
-        cout << "T[";
-        cout << seconds;
-        cout << "]: ";
-        thread teste1(teste, simulator);
-        
-        teste1.join();
-    }
+    Simulator* simulator = new Simulator(11, 10, enum_scheduling_algorithm::shortest_job);
+    thread simulatorThread(teste, simulator);
+    simulator->run();
+    simulatorThread.join();
 }

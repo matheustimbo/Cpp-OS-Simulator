@@ -37,7 +37,8 @@ public:
     }
 
     void run() {
-        scheduler->run();
+        thread schedulerThread(&Scheduler::run, getScheduler());
+        schedulerThread.join();
     }
 
     void load_scheduler() {

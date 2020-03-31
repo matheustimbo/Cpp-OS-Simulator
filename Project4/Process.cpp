@@ -8,6 +8,7 @@ class Process {
     int total_time;
     enum_process_state state;
     int reamaining_time;
+    int quantum_count;
 public:
     
 
@@ -16,6 +17,15 @@ public:
         total_time = time;
         reamaining_time = time;
         state = enum_process_state::ready;
+        quantum_count = 0;
+    }
+
+    int getQuantumCount() {
+        return quantum_count;
+    }
+
+    void setQuantumCount(int pNewQuantum) {
+        quantum_count = pNewQuantum;
     }
 
     int getProcessId() const {
