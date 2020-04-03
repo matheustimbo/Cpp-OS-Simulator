@@ -196,11 +196,12 @@ public:
     void print_queue() {
         cout << "FILA: ----------" << endl;
         for (Process* process : ready_queue) {
-            cout << "[Id: " << process->getProcessId() << " , Time: " << process->getTotalTime() - process->getReamainingTime() << "/" << process->getTotalTime();;
+            cout << "[Id: " << process->getProcessId() << " , Reamaining time: " <<  process->getReamainingTime() << ", total time: " << process->getTotalTime();;
             if (getSchedulingAlgorithm() == enum_scheduling_algorithm::round_robin) {
                 cout << ", quantum: " << process->getQuantumCount() << "/" << dQuantum;
             }
-            cout << "]" << endl;
+            cout << "]";
+            //<< endl;
         }
         cout << "----------" << endl;
     }
@@ -215,14 +216,14 @@ public:
             if (core->getCurrentProcess() == NULL) {
                 cout << "CORE_VAZIO]";
             } else {
-                cout << "[id: " << core->getCurrentProcess()->getProcessId() << ", time: " << core->getCurrentProcess()->getTotalTime() - core->getCurrentProcess()->getReamainingTime() << "/" << core->getCurrentProcess()->getTotalTime();
+                cout << "[id: " << core->getCurrentProcess()->getProcessId() << ", Reamaining time: " << core->getCurrentProcess()->getReamainingTime() << ", total time:" << core->getCurrentProcess()->getTotalTime();
                 if (getSchedulingAlgorithm() == enum_scheduling_algorithm::round_robin) {
                     cout << ", quantum: " << core->getCurrentProcess()->getQuantumCount() << "/" << dQuantum;
                 }
                 cout << "], ";
             }
             id++;
-            cout << endl;
+            //cout << endl;
         }
         cout << "---------------" << endl << endl;
     }

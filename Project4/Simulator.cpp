@@ -68,7 +68,9 @@ void teste(Simulator* simulator) {
     while (true) {
         //cout << "thread simulator segundo t[" << seconds << "]" << endl;
         seconds++;
-        simulator->create_random_process();
+        if (seconds % 5 == 0) {
+            simulator->create_random_process();
+        }
         //simulator->create_random_process();
         //simulator->getKernel()->getScheduler()->print_queue();
         //simulator->getKernel()->getScheduler()->print_cores();
@@ -77,7 +79,7 @@ void teste(Simulator* simulator) {
 }
 
 int main() {
-    Simulator* simulator = new Simulator(11, 10, enum_scheduling_algorithm::round_robin);
+    Simulator* simulator = new Simulator(1, 4, enum_scheduling_algorithm::round_robin);
     thread simulatorThread(teste, simulator);
     simulator->run();
     simulatorThread.join();
