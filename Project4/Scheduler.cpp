@@ -61,7 +61,8 @@ public:
                 roundrobin();
             }
             if (getSchedulingAlgorithm() == enum_scheduling_algorithm::shortest_job) {
-                shortest_job_first();
+                //shortest_job_first();
+                fifo_scheduler();
             }
         }
         
@@ -73,9 +74,30 @@ public:
     }
 
     void insert_process(Process* process) {
-        this->ready_queue.push_back(process);
+        if (getSchedulingAlgorithm() == enum_scheduling_algorithm::shortest_job) {
+            if (ready_queue.size() == 0) {
+                this->ready_queue.push_back(process);
+            }
+            else {
+                Process* processoAux = new Process(1, std::numeric_limits<int>::max());
+                ready_queue.push_back(processoAux);
+                for (int i = 0; i < ready_queue.size(); i++) {
+                    if (ready_queue[i]->getTotalTime() > process->getTotalTime()) {
+                        int j = ready_queue.size() - 1;
+                        while (j > i) {
+                            ready_queue[j] = ready_queue[j - 1];
+                            j--;
+                        }
+                        ready_queue[i] = process;
+                        break;
+                    }
+                }
+            }
+        }
+        else {
+            this->ready_queue.push_back(process);
+        }
     }
-
     void schedule_process(Core* core, Process* process) {
         core->setCurrentProcess(process);
     }

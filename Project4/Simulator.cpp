@@ -79,7 +79,7 @@ void teste(Simulator* simulator) {
 }
 
 int main() {
-    Simulator* simulator = new Simulator(1, 4, enum_scheduling_algorithm::round_robin);
+    Simulator* simulator = new Simulator(4, 4, enum_scheduling_algorithm::shortest_job);
     thread simulatorThread(teste, simulator);
     simulator->run();
     simulatorThread.join();
