@@ -1,13 +1,19 @@
 #pragma once 
 enum enum_scheduling_algorithm {
-    fifo,
-    shortest_job,
-    round_robin
+	fifo,
+	shortest_job,
+	round_robin
 };
 
-enum enum_process_state
-{
+enum enum_process_state {
 	ready,
 	running,
-	terminated
+	terminated,
+	aborted
+};
+
+enum enum_memory_allocation_algorithm {
+	first_fit,
+	best_fit,
+	quick_fit
 };

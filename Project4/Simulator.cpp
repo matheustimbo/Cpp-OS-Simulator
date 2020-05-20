@@ -25,7 +25,7 @@ public:
 
     enum_scheduling_algorithm scheduling_algorithm;
 
-    Simulator(int core_number, int dquantum, enum_scheduling_algorithm pScheduling_algorithm) {
+    Simulator(int core_number, int dquantum, enum_scheduling_algorithm pScheduling_algorithm, enum_memory_allocation_algorithm pMemoryAllocationAlgorithm, int total_installed_memory, int number_quick_lists, int number_memory_calls) {
         kernel = new Kernel(core_number, dquantum, pScheduling_algorithm);
         processor_cores_number = core_number;
         quantum = dquantum;
@@ -40,7 +40,7 @@ public:
     }
 
     void create_random_process() {
-        kernel->create_process(id_count, (rand() % 21)+1);
+        kernel->create_process(id_count, (rand() % 21) + 1);
         id_count++;
     }
 
@@ -57,7 +57,7 @@ public:
     }
 
     void run() {
-        batch_process_init(15);
+        batch_process_init(5);
         thread kernelThread(&Kernel::run, getKernel());
         kernelThread.join();
     }
@@ -79,7 +79,7 @@ void teste(Simulator* simulator) {
 }
 
 int main() {
-    Simulator* simulator = new Simulator(4, 4, enum_scheduling_algorithm::shortest_job);
+    Simulator* simulator = new Simulator(1, 4, enum_scheduling_algorithm::shortest_job);
     thread simulatorThread(teste, simulator);
     simulator->run();
     simulatorThread.join();

@@ -1,16 +1,19 @@
 #pragma once 
 #include <iostream>
 #include "Enums.cpp"
+#include <vector>
+#include "MemoryBlock.cpp"
 class Process {
-    
+
 
     int process_id;
     int total_time;
     enum_process_state state;
     int reamaining_time;
     int quantum_count;
+    vector<MemoryBlock*> memory_pointers;
 public:
-    
+
 
     Process(int id, int time) {
         process_id = id;
@@ -18,6 +21,14 @@ public:
         reamaining_time = time;
         state = enum_process_state::ready;
         quantum_count = 0;
+    }
+
+    void generate_random_static_memory_call() {
+
+    }
+
+    void generate_random_dynamic_memory_call() {
+
     }
 
     int getQuantumCount() {

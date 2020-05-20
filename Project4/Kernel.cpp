@@ -13,7 +13,7 @@ class Kernel {
     vector<Process*> process_table;
     Scheduler* scheduler;
 
-    
+
 
     void process_control_table() {
 
@@ -29,10 +29,18 @@ class Kernel {
 
     }
 
+    void memory_allocation() {
+
+    }
+
+    void free_memory() {
+
+    }
+
 
 
 public:
-    Kernel(int core_number, int dQuantum, enum_scheduling_algorithm scheduling_algorithm) {
+    Kernel(int core_number, int dQuantum, enum_scheduling_algorithm scheduling_algorithm, ) {
         scheduler = new Scheduler(scheduling_algorithm, dQuantum, core_number);
     }
 
