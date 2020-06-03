@@ -23,19 +23,37 @@ public:
 
     MemoryBlock* malloc(int required_amount) {
         if (free_blocks_list == NULL) { // nao tem nenhum bloco livre
-            MemoryBlock* memory_block = new MemoryBlock(required_amount, memory->size(), NULL)
-                return memory_block
+            return create_new_memory_block(required_Amount)
         } else
         if (required_amount <= available_memory) { // nao tem memoria pra criar bloco novo nem bloco livre
 
         } else { // tem 1 ou mais blocos livres
-            MemoryBlock* aux = free_blocks_list;
-            while (aux != NULL) {
-
-                aux = aux->next_free_block;
-            }
+            
         }
        
+    }
+
+    MemoryBlock* create_new_memory_block(int required_amount) {
+        MemoryBlock* memory_block = new MemoryBlock(required_amount, memory->size(), NULL);
+        this->memory.push_back(memory_block);
+        return memory_block;
+    }
+
+    MemoryBlock* allocate_free_memory_block(MemoryBlock* pMemory_block) {
+        if (pMemory_block == free_blocks_list) {
+            free_blocks_list = pMemory_block->next_free_block;
+        }
+        else {
+            MemoryBlock* aux = free_blocks_list;
+            do {
+                if (aux.next_free_block == pMemory_block) {
+                    aux.next_free_block = pMemory_block.next_free_block;
+                }
+                aux = aux.next_free_block;
+            } while (aux.next_free_block != pMemory_block);
+        }
+        
+        return pMemory_block;
     }
 
     void free() {
