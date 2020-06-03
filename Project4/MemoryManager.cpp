@@ -1,7 +1,11 @@
 #pragma once 
 #include <vector>
 #include "Enums.cpp"
+#include <exception>
 #include "MemoryBlock.cpp"
+
+using namespace std;
+
 class MemoryManager {
 private:
     int total_memory;
@@ -21,12 +25,26 @@ public:
         free_blocks_list = NULL;
     }
 
+    struct memory_excpetion : public exception {
+        const char* exception() const throw () {
+            return "Excecao Teste";
+        }
+    };
+
     MemoryBlock* malloc(int required_amount) {
         if (free_blocks_list == NULL) { // nao tem nenhum bloco livre
             return create_new_memory_block(required_Amount)
         } else
         if (required_amount <= available_memory) { // nao tem memoria pra criar bloco novo nem bloco livre
-
+            try
+            {
+                throw memory_exception();
+            }
+            catch (memory_exception& e)
+            {
+                std::cout << "Sem memoria suficiente para criar um novo bloco" << std::endl;
+                std::cout << e.exception() << std::endl;;
+            }
         } else { // tem 1 ou mais blocos livres
             
         }
