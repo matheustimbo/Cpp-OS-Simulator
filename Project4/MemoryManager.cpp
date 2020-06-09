@@ -15,6 +15,11 @@ private:
     int number_quick_lists;
     int minimum_amount_calls;
 
+    MemoryBlock* head;
+    MemoryBlock* tail;
+
+    enum_memory_allocation_algorithm memory_allocation_algorithm;
+
     vector<MemoryBlock*> memory;
     MemoryBlock* free_blocks_list;
     vector<MemoryBlock*> quick_fit_free_blocks;
@@ -23,6 +28,42 @@ public:
     MemoryManager(int p_total_memory) {
         total_memory = p_total_memory;
         free_blocks_list = NULL;
+        head = NULL;
+        tail = NULL;
+    }
+
+    void add_list(MemoryBlock* tmp) {
+        if (head == NULL) {
+            head = tmp;
+            tail = tmp;
+        }
+        else {
+            tail->next = tmp;
+            tail = tail->next;
+        }
+    }
+
+    void delete_list(MemoryBlock* tmp) {
+        MemoryBlock* deletePointer = NULL; 
+        tail->next = tmp;
+        tail = tail->next;
+
+        while (tail != NULL && tail->next_free_block != tmp) {
+            tail->next = tmp
+            tail = tail->next
+        }
+
+        if (tail == NULL) {
+            cout << tmp << "Nao esta na lista";
+            delete deletePointer;
+        }
+        else {
+            deletePointer = tail;
+            tail = tail->next;
+            tail->next = tmp;
+            delete deletePointer;
+            cout << " O valor " << tmp << " foi deletado";
+        }
     }
 
     struct memory_excpetion : public exception {
@@ -46,7 +87,20 @@ public:
                 std::cout << e.exception() << std::endl;;
             }
         } else { // tem 1 ou mais blocos livres
-            
+            switch (this->memory_allocation_algorithm)
+            {
+                case first_fit:
+                    return this->first_fit();
+                    break;
+
+                case best_fit:
+                    this->best_fit();
+                    break;
+
+                case quick_fit:
+                    this->quick_fit();
+                    break;
+            }
         }
        
     }
@@ -86,7 +140,7 @@ public:
 
     }
 
-    void first_fit() {
+    MemoryBlock* first_fit() {
 
     }
 
