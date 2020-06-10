@@ -128,8 +128,21 @@ public:
         return pMemory_block;
     }
 
-    void free() {
-
+    void free(MemoryBlock* memoryToFree) {
+        if(free_Blocks_list == NULL){
+            free_blocks_list = memoryToFree;
+        }
+        else {
+            MemoryBlock* aux = free_blocks_list;
+            do {
+                if (aux.next_free_block == NULL) {
+                    aux.next_free_block = memoryToFree;
+                }
+                else {
+                    aux = aux.next_free_block;
+                }
+            } while (aux.next_free_block != pMemory_block);
+        }
     }
 
     void set_allocation_algorithm(enum_memory_allocation_algorithm pMemoryAllocationAlgorithm) {
