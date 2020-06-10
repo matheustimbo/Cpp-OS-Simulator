@@ -144,8 +144,29 @@ public:
 
     }
 
-    void best_fit() {
+    MemoryBlock* best_fit(int required_amount) {
+        MemoryBlock bestMemoryBlockThatFits = NULL;
+        MemoryBlock* aux = free_blocks_list;
+        do {
+            if (aux->total_block_size >= required_amount) {
+                if (bestMemoryBlockThatFits != NULL) {
+                    bestMemoryBlockThatFits = aux;
+                }
+                else {
+                    if (aux->total_block_size < bestMemoryBlockThatFits.total_block_size)
+                        bestMemoryBlockThatFits = aux;
+                }
+            }
+            aux = aux.next_free_block;
+        } while (aux.next_free_block != NULL);
 
+        if (bestMemoryBlockThatFits == NULL) {
+            //criar bloco de memoria novo
+            return create_new_memory_block(required_amount);
+        }
+        else {
+            return bestMemoryBlockThatFits;
+        }
     }
 
     void quick_fit() {
