@@ -79,9 +79,9 @@ public:
 
     MemoryBlock* malloc(int required_amount) {
         if (free_blocks_list == NULL) { // nao tem nenhum bloco livre
-            return create_new_memory_block(required_Amount)
+            return create_new_memory_block(required_amount)
         } else
-        if (required_amount <= available_memory) { // nao tem memoria pra criar bloco novo nem bloco livre
+        if (required_amount <= memoria_nao_alocada) { // nao tem memoria pra criar bloco novo nem bloco livre
             try
             {
                 throw memory_exception();
@@ -99,11 +99,11 @@ public:
                     break;
 
                 case best_fit:
-                    this->best_fit();
+                    return this->best_fit();
                     break;
 
                 case quick_fit:
-                    this->quick_fit();
+                    return this->quick_fit();
                     break;
             }
         }
@@ -127,9 +127,10 @@ public:
         return memory_block;
     }
 
-    MemoryBlock* allocate_free_memory_block(MemoryBlock* pMemory_block) {
+    MemoryBlock* allocate_free_memory_block(MemoryBlock* pMemory_block) {//tira um bloco da lista de blocos free
+        
         if (pMemory_block == free_blocks_list) {
-            free_blocks_list = pMemory_block->next_free_block;
+            free_blocks_list = pMemory_block->next_free_block; //se ele for o primeiro da lista
         }
         else {
             MemoryBlock* aux = free_blocks_list;
@@ -140,8 +141,10 @@ public:
                 aux = aux.next_free_block;
             } while (aux.next_free_block != pMemory_block);
         }
-        
+        this->available_memory = this->available_memory - pMemoryBlock.total_block_size;
+        this->occupied_memory = this->occupied_memory + pMemory_block->total_block_size;
         return pMemory_block;
+        
     }
 
     void free(MemoryBlock* memoryToFree) {
@@ -159,6 +162,8 @@ public:
                 }
             } while (aux.next_free_block != NULL);
         }
+        this->available_memory = this->available_memory + memoryToFree->total_block_size;
+        this->occupied_memory = this->occupied_memory - memoryToFree->total_block_size;
     }
 
     void set_allocation_algorithm(enum_memory_allocation_algorithm pMemoryAllocationAlgorithm) {
@@ -194,6 +199,7 @@ public:
             return create_new_memory_block(required_amount);
         }
         else {
+            allocate_free_memory_block(bestMemoryBlockThatFits);
             return bestMemoryBlockThatFits;
         }
     }
