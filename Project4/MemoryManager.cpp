@@ -175,7 +175,24 @@ public:
     }
 
     MemoryBlock* first_fit() {
+        MemoryBlock firstFit = NULL;
+        MemoryBlock* aux = free_blocks_list;
+        do {
+            if (aux->total_block_size >= required_amount) {
+                firstFit = aux;
+                break;
+            }
+            aux = aux.next_free_block;
+        } while (aux.next_free_block != NULL);
 
+        if (firstFit == NULL) {
+            //criar bloco de memoria novo
+            return create_new_memory_block(required_amount);
+        }
+        else {
+            allocate_free_memory_block(firstFit);
+            return bestMemoryBlockThatFits;
+        }
     }
 
     MemoryBlock* best_fit(int required_amount) {
