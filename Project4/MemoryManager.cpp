@@ -167,11 +167,19 @@ public:
     }
 
     void set_allocation_algorithm(enum_memory_allocation_algorithm pMemoryAllocationAlgorithm) {
-
+        memory_allocation_algorithm = pMemoryAllocationAlgorithm;
     }
 
-    void check_free_memory() {
-
+    bool check_free_memory() {
+        MemoryBlock* aux = free_blocks_list;
+        do {
+            if (aux->total_block_size >= required_amount) {
+                return true;
+                break;
+            }
+            aux = aux.next_free_block;
+        } while (aux.next_free_block != NULL);
+        return false;
     }
 
     MemoryBlock* first_fit() {

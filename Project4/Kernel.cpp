@@ -5,6 +5,7 @@
 #include "Process.cpp"
 #include "Scheduler.cpp"
 #include "Enums.cpp"
+#include "MemoryManager.cpp"
 
 using namespace std;
 
@@ -12,6 +13,7 @@ class Kernel {
 
     vector<Process*> process_table;
     Scheduler* scheduler;
+    MemoryManager* memory_manager;
 
 
 
@@ -29,13 +31,6 @@ class Kernel {
 
     }
 
-    void memory_allocation() {
-
-    }
-
-    void free_memory() {
-
-    }
 
 
 
@@ -77,6 +72,15 @@ public:
 
     Scheduler* getScheduler() {
         return scheduler;
+    }
+
+
+    MemoryBlock memory_allocation(int required_amount) {
+        return this->memory_manager->malloc(required_amount);
+    }
+
+    void free_memory(MemoryBlock pMemoryBlock) {
+        this->memory_manager->free(pMemoryBlock);
     }
 
 };
