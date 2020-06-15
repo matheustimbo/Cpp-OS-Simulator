@@ -3,11 +3,14 @@
 #include "Enums.cpp"
 #include <vector>
 #include "MemoryBlock.cpp"
+#include "Kernel.cpp"
 class Process {
 
 
     int process_id;
     int total_time;
+    Kernel* pKernel;
+    MemoryBlock* block;
     enum_process_state state;
     int reamaining_time;
     int quantum_count;
@@ -21,14 +24,33 @@ public:
         reamaining_time = time;
         state = enum_process_state::ready;
         quantum_count = 0;
+        kernel = pKernel;
     }
 
     void generate_random_static_memory_call() {
-
+        int randomNumber = 1 + rand() % 4096;
+        block = this->pKernel->memory_allocation(randomNumber);
+        if (block != NULL) {
+            return this->pKernel->memory_allocation(NULL);
+        }
+        else {
+            return this->pKernel->kill_process();
+        }
     }
 
     void generate_random_dynamic_memory_call() {
+        int randomNumber = 1 + rand() % 4096;
+        int randomNumberAux = 1 + rand() % 50;
 
+        if (randomNumberAux <= 10) {
+            block = this->pKernel->memory_allocation(randomNumber);
+            if (block != NULL) {
+                return this->pKernel->memory_allocation(NULL);
+            }
+            else {
+                return this->pKernel->kill_process();
+            }
+        }
     }
 
     int getQuantumCount() {
