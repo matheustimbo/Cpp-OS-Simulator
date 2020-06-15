@@ -23,9 +23,7 @@ class Kernel {
 
 
 
-    void kill_process() {
 
-    }
 
     void run_process() {
 
@@ -42,6 +40,11 @@ public:
     void run() {
         thread schedulerThread(&Scheduler::run, getScheduler());
         schedulerThread.join();
+    }
+
+    void kill_process(Process* pProcess) {
+        this->scheduler->removeProcessById(pProcess->getProcessId());
+        pProcess->setState(enum_process_state::aborted);
     }
 
     void load_scheduler() {

@@ -43,19 +43,19 @@ public:
             tail = tmp;
         }
         else {
-            tail->next = tmp;
-            tail = tail->next;
+            tail->next_free_block = tmp;
+            tail = tail->next_free_block;
         }
     }
 
     void delete_list(MemoryBlock* tmp) {
         MemoryBlock* deletePointer = NULL; 
-        tail->next = tmp;
-        tail = tail->next;
+        tail->next_free_block = tmp;
+        tail = tail->next_free_block;
 
         while (tail != NULL && tail->next_free_block != tmp) {
-            tail->next = tmp
-            tail = tail->next
+            tail->next_free_block = tmp;
+            tail = tail->next_free_block;
         }
 
         if (tail == NULL) {
@@ -64,8 +64,8 @@ public:
         }
         else {
             deletePointer = tail;
-            tail = tail->next;
-            tail->next = tmp;
+            tail = tail->next_free_block;
+            tail->next_free_block = tmp;
             delete deletePointer;
             cout << " O valor " << tmp << " foi deletado";
         }
