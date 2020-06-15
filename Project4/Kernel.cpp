@@ -16,25 +16,9 @@ class Kernel {
     MemoryManager* memory_manager;
 
 
-
-    void process_control_table() {
-
-    }
-
-
-
-
-
-    void run_process() {
-
-    }
-
-
-
-
 public:
     Kernel(int core_number, int dQuantum, enum_scheduling_algorithm scheduling_algorithm) {
-        scheduler = new Scheduler(scheduling_algorithm, dQuantum, core_number, this);
+        scheduler = new Scheduler(scheduling_algorithm, dQuantum, core_number, memory_manager);
     }
 
     void run() {
@@ -54,7 +38,7 @@ public:
     }
 
     void create_process(int id, int time) {
-        Process* process = new Process(id, time, this);
+        Process* process = new Process(id, time, memory_manager);
         process_table.push_back(process);
         scheduler->insert_process(process);
     }

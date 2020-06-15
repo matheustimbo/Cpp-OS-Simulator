@@ -3,40 +3,39 @@
 #include "Enums.cpp"
 #include <vector>
 #include "MemoryBlock.cpp"
-#include "Kernel.cpp"
+#include "MemoryManager.cpp"
 
 class Process {
 
 
     int process_id;
     int total_time;
-    Kernel* kernel;
     MemoryBlock* block;
     enum_process_state state;
     int reamaining_time;
     int quantum_count;
     std::vector<MemoryBlock*> memory_pointers;
+    MemoryManager* memoryManager;
+
 public:
 
 
-    Process(int id, int time, Kernel* pKernel) {
+    Process(int id, int time, MemoryManager* pMemoryManager) {
         process_id = id;
         total_time = time;
         reamaining_time = time;
         state = enum_process_state::ready;
         quantum_count = 0;
-        kernel = pKernel;
+        memoryManager = pMemoryManager;
     }
 
     MemoryBlock* generate_random_static_memory_call() {
         int randomNumber = 1 + rand() % 4096;
-        MemoryBlock* block = this->kernel->memory_allocation(randomNumber);
-        if (block != NULL) {
-            return block;
+        MemoryBlock* block = this->memoryManager->malloc(randomNumber);
+        if(block == NULL){
+            this->setState(enum_process_state::aborted);
         }
-        else {
-            return this->kernel->kill_process(this);
-        }
+        return block;
     }
 
     MemoryBlock* generate_random_dynamic_memory_call() {
@@ -44,13 +43,11 @@ public:
         int randomNumberAux = 1 + rand() % 50;
 
         if (randomNumberAux <= 10) {
-            MemoryBlock* block = this->kernel->memory_allocation(randomNumber);
-            if (block != NULL) {
-                return block;
+            MemoryBlock* block = this->memoryManager->malloc(randomNumber);
+            if(block == NULL){
+                this->setState(enum_process_state::aborted);
             }
-            else {
-                return this->kernel->kill_process(this);
-            }
+            return block;
         }
     }
 

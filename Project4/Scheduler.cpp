@@ -4,7 +4,7 @@
 #include "Core.cpp"
 #include "Enums.cpp"
 #include "Cpu.cpp"
-#include "Kernel.cpp"
+#include "MemoryManager.cpp"
 
 using namespace std;
 
@@ -12,16 +12,16 @@ class Scheduler {
     vector<Process*> ready_queue;
     enum_scheduling_algorithm scheduling_algorithm;
     int dQuantum;
-    Kernel* kernel;
+    MemoryManager* memoryManager;
     
 public:
     Cpu* cpu;
 
-    Scheduler(enum_scheduling_algorithm schedulingAlgorithm, int pDQuantum, int core_number, Kernel* pKernel) {
+    Scheduler(enum_scheduling_algorithm schedulingAlgorithm, int pDQuantum, int core_number, MemoryManager* pMemoryManager) {
         scheduling_algorithm = schedulingAlgorithm;
         dQuantum = pDQuantum;
         cpu = new Cpu(core_number);
-        kernel = pKernel;
+        memoryManager = pMemoryManager;
     }
 
     Cpu* getCpu() {
@@ -81,7 +81,7 @@ public:
                 this->ready_queue.push_back(process);
             }
             else {
-                Process* processoAux = new Process(1, std::numeric_limits<int>::max(), kernel);
+                Process* processoAux = new Process(1, std::numeric_limits<int>::max(), memoryManager);
                 ready_queue.push_back(processoAux);
                 for (int i = 0; i < ready_queue.size(); i++) {
                     if (ready_queue[i]->getTotalTime() > process->getTotalTime()) {
