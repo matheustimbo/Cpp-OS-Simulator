@@ -23,13 +23,11 @@ private:
 
 public:
 
-    enum_scheduling_algorithm scheduling_algorithm;
 
-    Simulator(int core_number, int dquantum, enum_scheduling_algorithm pScheduling_algorithm, enum_memory_allocation_algorithm pMemoryAllocationAlgorithm, int total_installed_memory, int number_quick_lists, int number_memory_calls) {
-        kernel = new Kernel(core_number, dquantum, pScheduling_algorithm);
+    Simulator(int core_number, int dquantum, enum_scheduling_algorithm pScheduling_algorithm, enum_memory_allocation_algorithm pMemoryAllocationAlgorithm, int pTotal_installed_memory, int number_quick_lists, int number_memory_calls) {
+        kernel = new Kernel(core_number, dquantum, pScheduling_algorithm, pMemoryAllocationAlgorithm, pTotal_installed_memory);
         processor_cores_number = core_number;
         quantum = dquantum;
-        scheduling_algorithm = pScheduling_algorithm;
         id_count = 0;
     }
 

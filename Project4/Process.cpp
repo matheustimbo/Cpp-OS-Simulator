@@ -27,6 +27,14 @@ public:
         state = enum_process_state::ready;
         quantum_count = 0;
         memoryManager = pMemoryManager;
+        memory_pointers = NULL;
+        //cout<<"hmm"<<endl;
+        //cout<<generate_random_static_memory_call();
+    }
+
+    vector<MemoryBlock*> getMemoryPointers () {
+        return memory_pointers;
+
     }
 
     MemoryBlock* generate_random_static_memory_call() {

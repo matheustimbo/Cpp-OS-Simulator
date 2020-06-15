@@ -6,6 +6,7 @@
 #include "Scheduler.cpp"
 #include "Enums.cpp"
 #include "MemoryManager.cpp"
+#include "Debug.cpp"
 
 using namespace std;
 
@@ -14,16 +15,27 @@ class Kernel {
     vector<Process*> process_table;
     Scheduler* scheduler;
     MemoryManager* memory_manager;
-
+    Debug* debug;
 
 public:
-    Kernel(int core_number, int dQuantum, enum_scheduling_algorithm scheduling_algorithm) {
+    Kernel(int core_number, int dQuantum, enum_scheduling_algorithm scheduling_algorithm, enum_memory_allocation_algorithm pMemoryAllocationAlgorithm, int pTotal_installed_memory) {
         scheduler = new Scheduler(scheduling_algorithm, dQuantum, core_number, memory_manager);
+        memory_manager = new MemoryManager(pTotal_installed_memory, pMemoryAllocationAlgorithm);
+        debug = new Debug(scheduler, memory_manager, process_table);
     }
 
     void run() {
         thread schedulerThread(&Scheduler::run, getScheduler());
+        thread memoryManagerThread(&MemoryManager::run, getMemoryManager());
+        thread debugThread(&Debug::runDebug, getDebug());
         schedulerThread.join();
+
+
+        //memoryManagerThread.join();
+    }
+
+    Debug* getDebug(){
+        return debug;
     }
 
     void kill_process(Process* pProcess) {
@@ -59,6 +71,10 @@ public:
 
     Scheduler* getScheduler() {
         return scheduler;
+    }
+
+    MemoryManager* getMemoryManager() {
+        return memory_manager;
     }
 
 

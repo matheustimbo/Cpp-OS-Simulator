@@ -11,11 +11,12 @@ using namespace std;
 class Scheduler {
     vector<Process*> ready_queue;
     enum_scheduling_algorithm scheduling_algorithm;
-    int dQuantum;
+
     MemoryManager* memoryManager;
     
 public:
     Cpu* cpu;
+    int dQuantum;
 
     Scheduler(enum_scheduling_algorithm schedulingAlgorithm, int pDQuantum, int core_number, MemoryManager* pMemoryManager) {
         scheduling_algorithm = schedulingAlgorithm;
@@ -75,6 +76,10 @@ public:
         scheduleThread.join();
     }
 
+    MemoryManager* getMemoryManager () {
+        return memoryManager;
+    }
+
     void insert_process(Process* process) {
         if (getSchedulingAlgorithm() == enum_scheduling_algorithm::shortest_job) {
             if (ready_queue.size() == 0) {
@@ -122,7 +127,7 @@ public:
         }
         decrementOneSecondEachProcess();
         print_queue();
-        print_cores();
+        //print_cores();
     }
 
     void decrementOneSecondEachProcess() {
@@ -167,7 +172,7 @@ public:
         }
         decrementOneSecondEachProcess();
         print_queue();
-        print_cores();
+        //print_cores();
     }
 
     Process* getShortestProcess() {
@@ -194,7 +199,7 @@ public:
         incrementQuantum();
         decrementOneSecondEachProcess();
         print_queue();
-        print_cores();
+        //print_cores();
     }
 
     void incrementQuantum() {

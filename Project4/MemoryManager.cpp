@@ -2,6 +2,7 @@
 #include <vector>
 #include "Enums.cpp"
 #include <exception>
+#include <thread>
 #include "MemoryBlock.cpp"
 
 using namespace std;
@@ -26,7 +27,8 @@ private:
     vector<MemoryBlock*> quick_fit_free_blocks;
 public:
 
-    MemoryManager(int p_total_memory) {
+    MemoryManager(int p_total_memory, enum_memory_allocation_algorithm pMemory_allocation_algorithm) {
+        memory_allocation_algorithm = pMemory_allocation_algorithm;
         total_memory = p_total_memory;
         memory_overhead = 0;
         available_memory = 0;
@@ -35,6 +37,24 @@ public:
         free_blocks_list = NULL;
         head = NULL;
         tail = NULL;
+    }
+
+    vector<MemoryBlock*> getMemory() {
+        return memory;
+    }
+
+    void run() {
+        thread memoryManagerThread(&MemoryManager::runMemoryManagerAlgorithm, this);
+        memoryManagerThread.join();
+    }
+
+    void runMemoryManagerAlgorithm() {
+        cout<<"AAAAAAA"<<endl;
+        int seconds = 0;
+
+        while (true) {
+
+        }
     }
 
     void add_list(MemoryBlock* tmp) {
@@ -78,10 +98,14 @@ public:
     };
 
     MemoryBlock* malloc(int required_amount) {
+        cout<<"entrou"<<endl;
+        cout<<"required amount" << required_amount << endl;
+        //cout<<free_blocks_list == NULL
         if (free_blocks_list == NULL) { // nao tem nenhum bloco livre
+            cout<<"a"<<endl;
             return create_new_memory_block(required_amount);
-        } else
-        if (required_amount <= memoria_nao_alocada) { // nao tem memoria pra criar bloco novo nem bloco livre
+        } else if (required_amount >= memoria_nao_alocada) { // nao tem memoria pra criar bloco novo nem bloco livre
+            cout<<"b"<<endl;
             try
             {
                 throw memory_exception();
@@ -95,14 +119,17 @@ public:
             switch (this->memory_allocation_algorithm)
             {
                 case enum_memory_allocation_algorithm::first_fit:
+                    cout<<"c"<<endl;
                     return this->first_fit(required_amount);
                     break;
 
                 case enum_memory_allocation_algorithm::best_fit:
+                    cout<<"d"<<endl;
                     return this->best_fit(required_amount);
                     break;
 
                 case enum_memory_allocation_algorithm::quick_fit:
+                    cout<<"e"<<endl;
                     return this->quick_fit();
                     break;
                 default:
@@ -113,19 +140,31 @@ public:
     }
 
     MemoryBlock* create_new_memory_block(int required_amount) {
+        cout<<"criar novo bloco"<<endl;
         MemoryBlock* memory_block = new MemoryBlock(required_amount, this->memory.size());
         this->memory.push_back(memory_block);
-        MemoryBlock* aux = free_blocks_list;
-        do {
-            if (aux->next_free_block == NULL) {
-                aux->next_free_block = memory_block;
-            }
-            else {
-                aux = aux->next_free_block;
-            }
-        } while (aux->next_free_block != NULL);
+
+
+        if(free_blocks_list == NULL){
+            free_blocks_list = memory_block;
+        } else{
+            MemoryBlock* aux = free_blocks_list;
+            do {
+
+                if (aux->next_free_block == NULL) {
+                    aux->next_free_block = memory_block;
+                }
+                else {
+                    aux = aux->next_free_block;
+                }
+            } while (aux->next_free_block != NULL);
+        }
+
+        cout<<"vai retornar"<<endl;
+        cout<<memory_block->total_block_size<<endl;
         this->memory_overhead = this->memory_overhead + required_amount;
         this->available_memory = this->available_memory + required_amount;
+
         return memory_block;
     }
 
