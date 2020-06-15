@@ -36,7 +36,7 @@ class Kernel {
 
 public:
     Kernel(int core_number, int dQuantum, enum_scheduling_algorithm scheduling_algorithm) {
-        scheduler = new Scheduler(scheduling_algorithm, dQuantum, core_number, this*);
+        scheduler = new Scheduler(scheduling_algorithm, dQuantum, core_number, this);
     }
 
     void run() {
@@ -51,7 +51,7 @@ public:
     }
 
     void create_process(int id, int time) {
-        Process* process = new Process(id, time);
+        Process* process = new Process(id, time, this);
         process_table.push_back(process);
         scheduler->insert_process(process);
     }

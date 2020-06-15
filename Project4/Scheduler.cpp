@@ -4,9 +4,9 @@
 #include "Core.cpp"
 #include "Enums.cpp"
 #include "Cpu.cpp"
+#include "Kernel.cpp"
 
 using namespace std;
-
 
 class Scheduler {
     vector<Process*> ready_queue;

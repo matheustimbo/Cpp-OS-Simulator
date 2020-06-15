@@ -4,6 +4,7 @@
 #include <vector>
 #include "MemoryBlock.cpp"
 #include "Kernel.cpp"
+
 class Process {
 
 
@@ -14,11 +15,11 @@ class Process {
     enum_process_state state;
     int reamaining_time;
     int quantum_count;
-    vector<MemoryBlock*> memory_pointers;
+    std::vector<MemoryBlock*> memory_pointers;
 public:
 
 
-    Process(int id, int time, Kernel pKernel) {
+    Process(int id, int time, Kernel* pKernel) {
         process_id = id;
         total_time = time;
         reamaining_time = time;
@@ -27,18 +28,18 @@ public:
         kernel = pKernel;
     }
 
-    void generate_random_static_memory_call() {
+    MemoryBlock* generate_random_static_memory_call() {
         int randomNumber = 1 + rand() % 4096;
         MemoryBlock* block = this->kernel->memory_allocation(randomNumber);
         if (block != NULL) {
             return block;
         }
         else {
-            return this->kernel->kill_process(this*);
+            return this->kernel->kill_process(this);
         }
     }
 
-    void generate_random_dynamic_memory_call() {
+    MemoryBlock* generate_random_dynamic_memory_call() {
         int randomNumber = 1 + rand() % 4096;
         int randomNumberAux = 1 + rand() % 50;
 
@@ -48,7 +49,7 @@ public:
                 return block;
             }
             else {
-                return this->kernel->kill_process(this*);
+                return this->kernel->kill_process(this);
             }
         }
     }

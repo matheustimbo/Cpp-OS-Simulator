@@ -71,7 +71,7 @@ public:
         }
     }
 
-    struct memory_excpetion : public exception {
+    struct memory_exception : public exception {
         const char* exception() const throw () {
             return "Excecao Teste";
         }
@@ -79,7 +79,7 @@ public:
 
     MemoryBlock* malloc(int required_amount) {
         if (free_blocks_list == NULL) { // nao tem nenhum bloco livre
-            return create_new_memory_block(required_amount)
+            return create_new_memory_block(required_amount);
         } else
         if (required_amount <= memoria_nao_alocada) { // nao tem memoria pra criar bloco novo nem bloco livre
             try
@@ -94,15 +94,15 @@ public:
         } else { // tem 1 ou mais blocos livres
             switch (this->memory_allocation_algorithm)
             {
-                case enum_memory_allocation_algorithm.first_fit:
+                case enum_memory_allocation_algorithm::first_fit:
                     return this->first_fit(required_amount);
                     break;
 
-                case enum_memory_allocation_algorithm.best_fit:
+                case enum_memory_allocation_algorithm::best_fit:
                     return this->best_fit(required_amount);
                     break;
 
-                case enum_memory_allocation_algorithm.quick_fit:
+                case enum_memory_allocation_algorithm::quick_fit:
                     return this->quick_fit();
                     break;
                 default:
@@ -117,13 +117,13 @@ public:
         this->memory.push_back(memory_block);
         MemoryBlock* aux = free_blocks_list;
         do {
-            if (aux.next_free_block == NULL) {
-                aux.next_free_block = memory_block;
+            if (aux->next_free_block == NULL) {
+                aux->next_free_block = memory_block;
             }
             else {
-                aux = aux.next_free_block;
+                aux = aux->next_free_block;
             }
-        } while (aux.next_free_block != NULL);
+        } while (aux->next_free_block != NULL);
         this->memory_overhead = this->memory_overhead + required_amount;
         this->available_memory = this->available_memory + required_amount;
         return memory_block;
@@ -137,11 +137,11 @@ public:
         else {
             MemoryBlock* aux = free_blocks_list;
             do {
-                if (aux.next_free_block == pMemory_block) {
-                    aux.next_free_block = pMemory_block.next_free_block;
+                if (aux->next_free_block == pMemory_block) {
+                    aux->next_free_block = pMemory_block->next_free_block;
                 }
-                aux = aux.next_free_block;
-            } while (aux.next_free_block != pMemory_block);
+                aux = aux->next_free_block;
+            } while (aux->next_free_block != pMemory_block);
         }
         this->available_memory = this->available_memory - pMemory_block->total_block_size;
         this->occupied_memory = this->occupied_memory + pMemory_block->total_block_size;
@@ -156,13 +156,13 @@ public:
         else {
             MemoryBlock* aux = free_blocks_list;
             do {
-                if (aux.next_free_block == NULL) {
-                    aux.next_free_block = memoryToFree;
+                if (aux->next_free_block == NULL) {
+                    aux->next_free_block = memoryToFree;
                 }
                 else {
-                    aux = aux.next_free_block;
+                    aux = aux->next_free_block;
                 }
-            } while (aux.next_free_block != NULL);
+            } while (aux->next_free_block != NULL);
         }
         this->available_memory = this->available_memory + memoryToFree->total_block_size;
         this->occupied_memory = this->occupied_memory - memoryToFree->total_block_size;
@@ -179,8 +179,8 @@ public:
                 return true;
                 break;
             }
-            aux = aux.next_free_block;
-        } while (aux.next_free_block != NULL);
+            aux = aux->next_free_block;
+        } while (aux->next_free_block != NULL);
         return false;
     }
 
@@ -192,8 +192,8 @@ public:
                 firstFit = aux;
                 break;
             }
-            aux = aux.next_free_block;
-        } while (aux.next_free_block != NULL);
+            aux = aux->next_free_block;
+        } while (aux->next_free_block != NULL);
 
         if (firstFit == NULL) {
             //criar bloco de memoria novo
@@ -214,12 +214,12 @@ public:
                     bestMemoryBlockThatFits = aux;
                 }
                 else {
-                    if (aux->total_block_size < bestMemoryBlockThatFits.total_block_size)
+                    if (aux->total_block_size < bestMemoryBlockThatFits->total_block_size)
                         bestMemoryBlockThatFits = aux;
                 }
             }
-            aux = aux.next_free_block;
-        } while (aux.next_free_block != NULL);
+            aux = aux->next_free_block;
+        } while (aux->next_free_block != NULL);
 
         if (bestMemoryBlockThatFits == NULL) {
             //criar bloco de memoria novo
