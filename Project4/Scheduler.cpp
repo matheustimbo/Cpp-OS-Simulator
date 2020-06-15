@@ -12,14 +12,16 @@ class Scheduler {
     vector<Process*> ready_queue;
     enum_scheduling_algorithm scheduling_algorithm;
     int dQuantum;
+    Kernel* kernel;
     
 public:
     Cpu* cpu;
 
-    Scheduler(enum_scheduling_algorithm schedulingAlgorithm, int pDQuantum, int core_number) {
+    Scheduler(enum_scheduling_algorithm schedulingAlgorithm, int pDQuantum, int core_number, Kernel* pKernel) {
         scheduling_algorithm = schedulingAlgorithm;
         dQuantum = pDQuantum;
         cpu = new Cpu(core_number);
+        kernel = pKernel;
     }
 
     Cpu* getCpu() {
@@ -79,7 +81,7 @@ public:
                 this->ready_queue.push_back(process);
             }
             else {
-                Process* processoAux = new Process(1, std::numeric_limits<int>::max());
+                Process* processoAux = new Process(1, std::numeric_limits<int>::max(), kernel);
                 ready_queue.push_back(processoAux);
                 for (int i = 0; i < ready_queue.size(); i++) {
                     if (ready_queue[i]->getTotalTime() > process->getTotalTime()) {

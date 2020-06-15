@@ -35,8 +35,8 @@ class Kernel {
 
 
 public:
-    Kernel(int core_number, int dQuantum, enum_scheduling_algorithm scheduling_algorithm, ) {
-        scheduler = new Scheduler(scheduling_algorithm, dQuantum, core_number);
+    Kernel(int core_number, int dQuantum, enum_scheduling_algorithm scheduling_algorithm) {
+        scheduler = new Scheduler(scheduling_algorithm, dQuantum, core_number, this*);
     }
 
     void run() {
@@ -75,11 +75,11 @@ public:
     }
 
 
-    MemoryBlock memory_allocation(int required_amount) {
+    MemoryBlock* memory_allocation(int required_amount) {
         return this->memory_manager->malloc(required_amount);
     }
 
-    void free_memory(MemoryBlock pMemoryBlock) {
+    void free_memory(MemoryBlock* pMemoryBlock) {
         this->memory_manager->free(pMemoryBlock);
     }
 

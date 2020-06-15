@@ -94,24 +94,26 @@ public:
         } else { // tem 1 ou mais blocos livres
             switch (this->memory_allocation_algorithm)
             {
-                case first_fit:
-                    return this->first_fit();
+                case enum_memory_allocation_algorithm.first_fit:
+                    return this->first_fit(required_amount);
                     break;
 
-                case best_fit:
-                    return this->best_fit();
+                case enum_memory_allocation_algorithm.best_fit:
+                    return this->best_fit(required_amount);
                     break;
 
-                case quick_fit:
+                case enum_memory_allocation_algorithm.quick_fit:
                     return this->quick_fit();
                     break;
+                default:
+                    return this->first_fit(required_amount);
             }
         }
        
     }
 
     MemoryBlock* create_new_memory_block(int required_amount) {
-        MemoryBlock* memory_block = new MemoryBlock(required_amount, memory->size(), NULL);
+        MemoryBlock* memory_block = new MemoryBlock(required_amount, this->memory.size());
         this->memory.push_back(memory_block);
         MemoryBlock* aux = free_blocks_list;
         do {
@@ -141,15 +143,15 @@ public:
                 aux = aux.next_free_block;
             } while (aux.next_free_block != pMemory_block);
         }
-        this->available_memory = this->available_memory - pMemoryBlock.total_block_size;
+        this->available_memory = this->available_memory - pMemory_block->total_block_size;
         this->occupied_memory = this->occupied_memory + pMemory_block->total_block_size;
         return pMemory_block;
         
     }
 
     void free(MemoryBlock* memoryToFree) {
-        if(free_Blocks_list == NULL){
-            free_blocks_list = memoryToFree;
+        if(this->free_blocks_list == NULL){
+            this->free_blocks_list = memoryToFree;
         }
         else {
             MemoryBlock* aux = free_blocks_list;
@@ -170,8 +172,8 @@ public:
         memory_allocation_algorithm = pMemoryAllocationAlgorithm;
     }
 
-    bool check_free_memory() {
-        MemoryBlock* aux = free_blocks_list;
+    bool check_free_memory(int required_amount) {
+        MemoryBlock* aux = this->free_blocks_list;
         do {
             if (aux->total_block_size >= required_amount) {
                 return true;
@@ -182,9 +184,9 @@ public:
         return false;
     }
 
-    MemoryBlock* first_fit() {
-        MemoryBlock firstFit = NULL;
-        MemoryBlock* aux = free_blocks_list;
+    MemoryBlock* first_fit(int required_amount) {
+        MemoryBlock* firstFit = NULL;
+        MemoryBlock* aux = this->free_blocks_list;
         do {
             if (aux->total_block_size >= required_amount) {
                 firstFit = aux;
@@ -199,12 +201,12 @@ public:
         }
         else {
             allocate_free_memory_block(firstFit);
-            return bestMemoryBlockThatFits;
+            return firstFit;
         }
     }
 
     MemoryBlock* best_fit(int required_amount) {
-        MemoryBlock bestMemoryBlockThatFits = NULL;
+        MemoryBlock* bestMemoryBlockThatFits = NULL;
         MemoryBlock* aux = free_blocks_list;
         do {
             if (aux->total_block_size >= required_amount) {
@@ -229,7 +231,7 @@ public:
         }
     }
 
-    void quick_fit() {
+    MemoryBlock* quick_fit() {
 
     }
 };

@@ -9,7 +9,7 @@ class Process {
 
     int process_id;
     int total_time;
-    Kernel* pKernel;
+    Kernel* kernel;
     MemoryBlock* block;
     enum_process_state state;
     int reamaining_time;
@@ -18,7 +18,7 @@ class Process {
 public:
 
 
-    Process(int id, int time) {
+    Process(int id, int time, Kernel pKernel) {
         process_id = id;
         total_time = time;
         reamaining_time = time;
@@ -29,12 +29,12 @@ public:
 
     void generate_random_static_memory_call() {
         int randomNumber = 1 + rand() % 4096;
-        block = this->pKernel->memory_allocation(randomNumber);
+        MemoryBlock* block = this->kernel->memory_allocation(randomNumber);
         if (block != NULL) {
-            return this->pKernel->memory_allocation(NULL);
+            return block;
         }
         else {
-            return this->pKernel->kill_process();
+            return this->kernel->kill_process(this*);
         }
     }
 
@@ -43,12 +43,12 @@ public:
         int randomNumberAux = 1 + rand() % 50;
 
         if (randomNumberAux <= 10) {
-            block = this->pKernel->memory_allocation(randomNumber);
+            MemoryBlock* block = this->kernel->memory_allocation(randomNumber);
             if (block != NULL) {
-                return this->pKernel->memory_allocation(NULL);
+                return block;
             }
             else {
-                return this->pKernel->kill_process();
+                return this->kernel->kill_process(this*);
             }
         }
     }
