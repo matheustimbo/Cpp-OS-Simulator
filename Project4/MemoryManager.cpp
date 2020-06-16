@@ -9,13 +9,7 @@ using namespace std;
 
 class MemoryManager {
 private:
-    int total_memory;   //toda a memoria do sistema
-    int memory_overhead; //soma da memoria dos blocos
-    int available_memory; //soma da memoria dos blocos livres
-    int occupied_memory; //soma da memoria dos blocos ocupados
-    int memoria_nao_alocada; //total_memory - memoryoverhead = memoria disponivel pra criar blocos
-    int number_quick_lists;
-    int minimum_amount_calls;
+
 
     MemoryBlock* head;
     MemoryBlock* tail;
@@ -26,6 +20,13 @@ private:
     MemoryBlock* free_blocks_list;
     vector<MemoryBlock*> quick_fit_free_blocks;
 public:
+    int total_memory;   //toda a memoria do sistema
+    int memory_overhead; //soma da memoria dos blocos
+    int available_memory; //soma da memoria dos blocos livres
+    int occupied_memory; //soma da memoria dos blocos ocupados
+    int memoria_nao_alocada; //total_memory - memoryoverhead = memoria disponivel pra criar blocos
+    int number_quick_lists;
+    int minimum_amount_calls;
 
     MemoryManager(int p_total_memory, enum_memory_allocation_algorithm pMemory_allocation_algorithm) {
         memory_allocation_algorithm = pMemory_allocation_algorithm;
@@ -145,10 +146,13 @@ public:
         cout<<"criar novo bloco"<<endl;
         MemoryBlock* memory_block = new MemoryBlock(required_amount, this->memory.size());
         this->memory.push_back(memory_block);
+        memory_overhead += required_amount;
+        occupied_memory += required_amount;
+        memoria_nao_alocada = total_memory - memory_overhead;
         cout<<"vai retornar um bloco de tamanho "<< memory_block->total_block_size <<endl;
         return memory_block;
     }
-        /*if(free_blocks_list == NULL){
+        /*if((free_blocks_list == NULL){)
             free_blocks_list = memory_block;
         } else{
             MemoryBlock* aux = free_blocks_list;
@@ -234,18 +238,19 @@ public:
         if(this->free_blocks_list != NULL){
             MemoryBlock* aux = this->free_blocks_list;
             do {
-                cout<<"bb"<<endl;
+                cout<<"bb1"<<endl;
                 if (aux->total_block_size >= required_amount) {
+                    cout << "deu fit" << endl;
                     firstFit = aux;
                     break;
                 }
                 aux = aux->next_free_block;
-            } while (aux->next_free_block != NULL);
+            } while (aux != NULL);
         }
 
         if (firstFit == NULL) {
             //criar bloco de memoria novo
-            cout<<"bb"<<endl;
+            cout<<"bb2"<<endl;
             return create_new_memory_block(required_amount);
         }
         else {

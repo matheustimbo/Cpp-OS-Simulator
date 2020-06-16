@@ -77,7 +77,7 @@ void teste(Simulator* simulator) {
 }
 
 int main() {
-    Simulator* simulator = new Simulator(1, 4, enum_scheduling_algorithm::shortest_job, enum_memory_allocation_algorithm::first_fit, 8192, 1, 1);
+    Simulator* simulator = new Simulator(1, 4, enum_scheduling_algorithm::shortest_job, enum_memory_allocation_algorithm::first_fit, 536870912, 1, 1);
     thread simulatorThread(teste, simulator);
     simulator->run();
     simulatorThread.join();

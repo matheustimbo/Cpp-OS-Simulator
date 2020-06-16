@@ -53,6 +53,7 @@ public:
 
         Process* process = new Process(id, time, memory_manager);
         process_table.push_back(process);
+        cout << "adicionei processo, agora a process table ta com " << process_table.size() << endl;
         scheduler->insert_process(process);
     }
 

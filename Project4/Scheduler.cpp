@@ -143,9 +143,16 @@ public:
             if (core->getCurrentProcess() != NULL) {
                 if (core->getCurrentProcess()->getReamainingTime() == 0) {
                     removeProcessById(core->getCurrentProcess()->getProcessId());
+                    freeBlocksFromFinishedProcess(core->getCurrentProcess());
                     core->setCurrentProcess(NULL);
                 }
             }
+        }
+    }
+
+    void freeBlocksFromFinishedProcess(Process* process){
+        for(MemoryBlock* memoryBlock : process->getMemoryPointers()){
+            memoryManager->free(memoryBlock);
         }
     }
 

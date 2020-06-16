@@ -24,20 +24,29 @@ public:
     }
 
     void print_blocks() {
-        cout<<"BLOCOS DE MEMORIA: -------------"<<endl;
-        int id = 0;
-        cout<<"Memory Block: [";
+        cout<<"MEMORIA: TM: " << memoryManager->total_memory << " MO: " << memoryManager->memory_overhead << " AM: " << memoryManager->available_memory << " OM: " << memoryManager->occupied_memory << " MNA: " << memoryManager->memoria_nao_alocada << endl;
+        //cout<<"BLOCOS DE MEMORIA: -------------"<<endl;
+        int idBloco = 0;
+        int idProcesso = 0;
+        cout<<"MB: [";
+        /*for(Process* process : scheduler->getReadyQueue()){
+            for(MemoryBlock* memoryBlock: process->getMemoryPointers()){
+                cout <<"[ id: " << idBloco << " , ProcessId: " << getMemoryProcess(memoryBlock)->getProcessId() << " , Memoria: " << memoryBlock->occupied_size << "/" << memoryBlock->total_block_size << " ],";
+                idBloco++;
+            }
+            idProcesso++;
+        }*/
         for(MemoryBlock* memoryBlock : memoryManager->getMemory()){
 
-            cout <<"[ id: " << id << " , ProcessId: " << getMemoryProcess(memoryBlock)->getProcessId() << " , Memoria: " << memoryBlock->occupied_size << "/" << memoryBlock->total_block_size << " ],";
+            cout <<"[ id: " << idBloco << " , pcID: " << getMemoryProcess(memoryBlock)->getProcessId() << " , MM: " << memoryBlock->occupied_size << "/" << memoryBlock->total_block_size << " ],";
 
-            id++;
+            idBloco++;
         }
         cout <<" ]" <<endl <<endl;
     }
 
     Process* getMemoryProcess (MemoryBlock* pMemoryBlock){
-        for(Process* process : process_table){
+        for(Process* process : scheduler->getReadyQueue()){
             for(MemoryBlock* memoryBlock : process->getMemoryPointers()){
                 if(memoryBlock == pMemoryBlock){
                     return process;
@@ -49,9 +58,9 @@ public:
     void print_queue() {
         cout << "FILA: ----------" << endl;
         for (Process* process : scheduler->getReadyQueue()) {
-            cout << "[Id: " << process->getProcessId() << " , Reamaining time: " <<  process->getReamainingTime() << ", total time: " << process->getTotalTime();;
+            cout << "[Id: " << process->getProcessId() << " , RT: " <<  process->getReamainingTime() << ", TT: " << process->getTotalTime();;
             if (scheduler->getSchedulingAlgorithm() == enum_scheduling_algorithm::round_robin) {
-                cout << ", quantum: " << process->getQuantumCount() << "/" << scheduler->dQuantum;
+                cout << ", QT: " << process->getQuantumCount() << "/" << scheduler->dQuantum;
             }
             cout << "]";
             //<< endl;
@@ -65,13 +74,13 @@ public:
         for (Core* core : scheduler->getCpu()->getCores()) {
             cout << "[Core ";
             cout << id;
-            cout << ", Process:";
+            cout << ", PRCS:";
             if (core->getCurrentProcess() == NULL) {
                 cout << "CORE_VAZIO]";
             } else {
-                cout << "[id: " << core->getCurrentProcess()->getProcessId() << ", Reamaining time: " << core->getCurrentProcess()->getReamainingTime() << ", total time:" << core->getCurrentProcess()->getTotalTime();
+                cout << "[id: " << core->getCurrentProcess()->getProcessId() << ", RT: " << core->getCurrentProcess()->getReamainingTime() << ", TT:" << core->getCurrentProcess()->getTotalTime();
                 if (scheduler->getSchedulingAlgorithm() == enum_scheduling_algorithm::round_robin) {
-                    cout << ", quantum: " << core->getCurrentProcess()->getQuantumCount() << "/" << scheduler->dQuantum;
+                    cout << ", QT: " << core->getCurrentProcess()->getQuantumCount() << "/" << scheduler->dQuantum;
                 }
                 cout << "], ";
             }
