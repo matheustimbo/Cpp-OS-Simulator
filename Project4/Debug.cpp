@@ -16,6 +16,7 @@ public:
 
     void runDebug () {
         while (true) {
+            print_queue();
             print_cores();
             print_blocks();
             std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -28,11 +29,11 @@ public:
         cout<<"Memory Block: [";
         for(MemoryBlock* memoryBlock : memoryManager->getMemory()){
 
-            cout <<" id: " << id << " , ProcessId: " << getMemoryProcess(memoryBlock)->getProcessId() << " , Memoria: " << memoryBlock->occupied_size << "/" << memoryBlock->total_block_size;
+            cout <<"[ id: " << id << " , ProcessId: " << getMemoryProcess(memoryBlock)->getProcessId() << " , Memoria: " << memoryBlock->occupied_size << "/" << memoryBlock->total_block_size << " ],";
 
             id++;
         }
-        cout <<" ]" <<endl;
+        cout <<" ]" <<endl <<endl;
     }
 
     Process* getMemoryProcess (MemoryBlock* pMemoryBlock){
@@ -43,6 +44,19 @@ public:
                 }
             }
         }
+    }
+
+    void print_queue() {
+        cout << "FILA: ----------" << endl;
+        for (Process* process : scheduler->getReadyQueue()) {
+            cout << "[Id: " << process->getProcessId() << " , Reamaining time: " <<  process->getReamainingTime() << ", total time: " << process->getTotalTime();;
+            if (scheduler->getSchedulingAlgorithm() == enum_scheduling_algorithm::round_robin) {
+                cout << ", quantum: " << process->getQuantumCount() << "/" << scheduler->dQuantum;
+            }
+            cout << "]";
+            //<< endl;
+        }
+        cout << "----------" << endl <<endl;
     }
 
     void print_cores() {

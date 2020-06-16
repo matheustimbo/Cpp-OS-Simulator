@@ -19,8 +19,8 @@ class Kernel {
 
 public:
     Kernel(int core_number, int dQuantum, enum_scheduling_algorithm scheduling_algorithm, enum_memory_allocation_algorithm pMemoryAllocationAlgorithm, int pTotal_installed_memory) {
-        scheduler = new Scheduler(scheduling_algorithm, dQuantum, core_number, memory_manager);
         memory_manager = new MemoryManager(pTotal_installed_memory, pMemoryAllocationAlgorithm);
+        scheduler = new Scheduler(scheduling_algorithm, dQuantum, core_number, memory_manager);
         debug = new Debug(scheduler, memory_manager, process_table);
     }
 
@@ -50,6 +50,7 @@ public:
     }
 
     void create_process(int id, int time) {
+
         Process* process = new Process(id, time, memory_manager);
         process_table.push_back(process);
         scheduler->insert_process(process);

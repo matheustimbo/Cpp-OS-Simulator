@@ -21,15 +21,13 @@ public:
 
 
     Process(int id, int time, MemoryManager* pMemoryManager) {
+        memoryManager = pMemoryManager;
         process_id = id;
         total_time = time;
         reamaining_time = time;
         state = enum_process_state::ready;
         quantum_count = 0;
-        memoryManager = pMemoryManager;
-        memory_pointers = NULL;
-        //cout<<"hmm"<<endl;
-        //cout<<generate_random_static_memory_call();
+        generate_random_static_memory_call();
     }
 
     vector<MemoryBlock*> getMemoryPointers () {
@@ -38,12 +36,21 @@ public:
     }
 
     MemoryBlock* generate_random_static_memory_call() {
-        int randomNumber = 1 + rand() % 4096;
-        MemoryBlock* block = this->memoryManager->malloc(randomNumber);
-        if(block == NULL){
-            this->setState(enum_process_state::aborted);
+        try{
+            int randomNumber = 1 + rand() % 4096;
+            MemoryBlock* block = this->memoryManager->malloc(randomNumber);
+            cout <<"passou do malloc " <<endl<<endl;
+            if(block == NULL){
+                this->setState(enum_process_state::aborted);
+
+            } else {
+                this->memory_pointers.push_back(block);
+            }
+            return block;
+        } catch (...) {
+            throw;
         }
-        return block;
+
     }
 
     MemoryBlock* generate_random_dynamic_memory_call() {
@@ -54,6 +61,9 @@ public:
             MemoryBlock* block = this->memoryManager->malloc(randomNumber);
             if(block == NULL){
                 this->setState(enum_process_state::aborted);
+
+            } else {
+                this->memory_pointers.push_back(block);
             }
             return block;
         }

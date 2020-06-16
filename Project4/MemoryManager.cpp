@@ -98,54 +98,57 @@ public:
     };
 
     MemoryBlock* malloc(int required_amount) {
-        cout<<"entrou"<<endl;
-        cout<<"required amount" << required_amount << endl;
-        //cout<<free_blocks_list == NULL
-        if (free_blocks_list == NULL) { // nao tem nenhum bloco livre
-            cout<<"a"<<endl;
+        cout<<"entrou no malloc"<<endl;
+        cout<<"required amount " << required_amount << endl;
+        if (this->free_blocks_list == NULL) { // nao tem nenhum bloco livre
+            cout<<"free blocks list ta null "<<endl;
             return create_new_memory_block(required_amount);
-        } else if (required_amount >= memoria_nao_alocada) { // nao tem memoria pra criar bloco novo nem bloco livre
-            cout<<"b"<<endl;
-            try
-            {
-                throw memory_exception();
-            }
-            catch (memory_exception& e)
-            {
-                std::cout << "Sem memoria suficiente para criar um novo bloco" << std::endl;
-                std::cout << e.exception() << std::endl;;
-            }
-        } else { // tem 1 ou mais blocos livres
-            switch (this->memory_allocation_algorithm)
-            {
-                case enum_memory_allocation_algorithm::first_fit:
-                    cout<<"c"<<endl;
-                    return this->first_fit(required_amount);
-                    break;
+        } else {
+            cout<<"free blocks list não ta null, então" <<endl;
+            if (required_amount >= memoria_nao_alocada) { // nao tem memoria pra criar bloco novo nem bloco livre
+                cout<<"nao tem memoria suficiente"<<endl;
+                try
+                {
+                    throw memory_exception();
+                }
+                catch (memory_exception& e)
+                {
+                    std::cout << "Sem memoria suficiente para criar um novo bloco" << std::endl;
+                    std::cout << e.exception() << std::endl;;
+                }
+            } else { // tem 1 ou mais blocos livres
+                cout<<"tem memoria suficiente, vamo chaamr um metodo de alocação" <<endl;
+                switch (this->memory_allocation_algorithm)
+                {
+                    case enum_memory_allocation_algorithm::first_fit:
+                        cout<<"c"<<endl;
+                        return this->first_fit(required_amount);
+                        break;
 
-                case enum_memory_allocation_algorithm::best_fit:
-                    cout<<"d"<<endl;
-                    return this->best_fit(required_amount);
-                    break;
+                    case enum_memory_allocation_algorithm::best_fit:
+                        cout<<"d"<<endl;
+                        return this->best_fit(required_amount);
+                        break;
 
-                case enum_memory_allocation_algorithm::quick_fit:
-                    cout<<"e"<<endl;
-                    return this->quick_fit();
-                    break;
-                default:
-                    return this->first_fit(required_amount);
+                    case enum_memory_allocation_algorithm::quick_fit:
+                        cout<<"e"<<endl;
+                        return this->quick_fit();
+                        break;
+                    default:
+                        return this->first_fit(required_amount);
+                }
             }
         }
-       
     }
 
     MemoryBlock* create_new_memory_block(int required_amount) {
         cout<<"criar novo bloco"<<endl;
         MemoryBlock* memory_block = new MemoryBlock(required_amount, this->memory.size());
         this->memory.push_back(memory_block);
-
-
-        if(free_blocks_list == NULL){
+        cout<<"vai retornar um bloco de tamanho "<< memory_block->total_block_size <<endl;
+        return memory_block;
+    }
+        /*if(free_blocks_list == NULL){
             free_blocks_list = memory_block;
         } else{
             MemoryBlock* aux = free_blocks_list;
@@ -158,22 +161,23 @@ public:
                     aux = aux->next_free_block;
                 }
             } while (aux->next_free_block != NULL);
-        }
+        }*/
 
-        cout<<"vai retornar"<<endl;
-        cout<<memory_block->total_block_size<<endl;
-        this->memory_overhead = this->memory_overhead + required_amount;
-        this->available_memory = this->available_memory + required_amount;
 
-        return memory_block;
-    }
+        //this->memory_overhead = this->memory_overhead + required_amount;
+        //this->available_memory = this->available_memory + required_amount;
+
+
+
 
     MemoryBlock* allocate_free_memory_block(MemoryBlock* pMemory_block) {//tira um bloco da lista de blocos free
-        
+        cout << "alocar bloco de memoria" <<endl;
         if (pMemory_block == free_blocks_list) {
+            cout<<"aaa"<<endl;
             free_blocks_list = pMemory_block->next_free_block; //se ele for o primeiro da lista
         }
         else {
+            cout<<"bbb"<<endl;
             MemoryBlock* aux = free_blocks_list;
             do {
                 if (aux->next_free_block == pMemory_block) {
@@ -224,18 +228,24 @@ public:
     }
 
     MemoryBlock* first_fit(int required_amount) {
+        cout<<"entrou no first_fit"<<endl;
         MemoryBlock* firstFit = NULL;
-        MemoryBlock* aux = this->free_blocks_list;
-        do {
-            if (aux->total_block_size >= required_amount) {
-                firstFit = aux;
-                break;
-            }
-            aux = aux->next_free_block;
-        } while (aux->next_free_block != NULL);
+
+        if(this->free_blocks_list != NULL){
+            MemoryBlock* aux = this->free_blocks_list;
+            do {
+                cout<<"bb"<<endl;
+                if (aux->total_block_size >= required_amount) {
+                    firstFit = aux;
+                    break;
+                }
+                aux = aux->next_free_block;
+            } while (aux->next_free_block != NULL);
+        }
 
         if (firstFit == NULL) {
             //criar bloco de memoria novo
+            cout<<"bb"<<endl;
             return create_new_memory_block(required_amount);
         }
         else {

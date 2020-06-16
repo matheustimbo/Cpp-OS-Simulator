@@ -126,7 +126,7 @@ public:
             }
         }
         decrementOneSecondEachProcess();
-        print_queue();
+        //print_queue();
         //print_cores();
     }
 
@@ -171,7 +171,7 @@ public:
             }
         }
         decrementOneSecondEachProcess();
-        print_queue();
+        //print_queue();
         //print_cores();
     }
 
@@ -198,7 +198,7 @@ public:
         }
         incrementQuantum();
         decrementOneSecondEachProcess();
-        print_queue();
+        //print_queue();
         //print_cores();
     }
 
