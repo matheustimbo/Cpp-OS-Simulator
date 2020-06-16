@@ -134,8 +134,13 @@ public:
         for (Core* core : cpu->getCores()) {
             if (core->getCurrentProcess() != NULL) {
                 core->getCurrentProcess()->setReamainingTime(core->getCurrentProcess()->getReamainingTime() - 1);
+                makeDynamicCall(core->getCurrentProcess());
             }  
         }
+    }
+
+    void makeDynamicCall(Process* process) {
+        process->generate_random_dynamic_memory_call();
     }
 
     void removeAllFinishedProcessFromReadyQueue() {

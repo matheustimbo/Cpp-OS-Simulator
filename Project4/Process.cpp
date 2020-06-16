@@ -63,6 +63,9 @@ public:
             MemoryBlock* block = this->memoryManager->malloc(randomNumber);
             if(block == NULL){
                 this->setState(enum_process_state::aborted);
+                for(MemoryBlock* memoryBlock: memory_pointers){
+                    memoryManager->free(memoryBlock);
+                }
 
             } else {
                 this->memory_pointers.push_back(block);
