@@ -57,6 +57,7 @@ public:
             seconds++;
             std::this_thread::sleep_for(std::chrono::seconds(1));
             cout << "scheduling algorithm: " << getSchedulingAlgorithm() << endl;
+            checkAborted();
             if (getSchedulingAlgorithm() == enum_scheduling_algorithm::fifo) {
                 fifo_scheduler();
             }
@@ -152,6 +153,29 @@ public:
                     core->setCurrentProcess(NULL);
                 }
             }
+        }
+    }
+
+    void checkAborted(){
+        for(Process* process : ready_queue){
+            if (process != nullptr) {
+                if (process->getState() == enum_process_state::aborted) {
+                    removeProcessById(process->getProcessId());
+                    freeBlocksFromFinishedProcess(process);
+                }
+            }
+            
+        }
+        for(Core* core: getCpu()->getCores()){
+            Process* processAux = core->getCurrentProcess();
+            if (processAux != nullptr) {
+                if (core->getCurrentProcess()->getState() == enum_process_state::aborted) {
+                    removeProcessById(core->getCurrentProcess()->getProcessId());
+                    freeBlocksFromFinishedProcess(core->getCurrentProcess());
+                    core->setCurrentProcess(NULL);
+                }
+            }
+            
         }
     }
 

@@ -35,43 +35,57 @@ public:
 
     }
 
-    MemoryBlock* generate_random_static_memory_call() {
+    void generate_random_static_memory_call() {
         try{
             int randomNumber = 1 + rand() % 4096;
-            MemoryBlock* block = this->memoryManager->malloc(randomNumber);
-            cout <<"passou do malloc " <<endl<<endl;
-            if(block == NULL){
-                this->setState(enum_process_state::aborted);
-                for(MemoryBlock* memoryBlock: memory_pointers){
-                    memoryManager->free(memoryBlock);
+            if(this->memoryManager->check_free_memory(randomNumber)){
+                MemoryBlock* block = this->memoryManager->malloc(randomNumber);
+                cout <<"passou do malloc " <<endl<<endl;
+                if(block == NULL){
+                    this->setState(enum_process_state::aborted);
+                    for(MemoryBlock* memoryBlock: memory_pointers){
+                        memoryManager->free(memoryBlock);
+                    }
+                } else {
+                    block->occupied_size = randomNumber;
+                    this->memory_pointers.push_back(block);
                 }
-            } else {
-                this->memory_pointers.push_back(block);
+            } else { //memoria cheia!!
+               abort();
             }
-            return block;
+
         } catch (...) {
             throw;
         }
 
     }
 
-    MemoryBlock* generate_random_dynamic_memory_call() {
+    void generate_random_dynamic_memory_call() {
         int randomNumber = 1 + rand() % 4096;
         int randomNumberAux = 1 + rand() % 50;
 
         if (randomNumberAux <= 10) {
-            MemoryBlock* block = this->memoryManager->malloc(randomNumber);
-            if(block == NULL){
-                this->setState(enum_process_state::aborted);
-                for(MemoryBlock* memoryBlock: memory_pointers){
-                    memoryManager->free(memoryBlock);
-                }
+            if(this->memoryManager->check_free_memory(randomNumber)){
+                MemoryBlock* block = this->memoryManager->malloc(randomNumber);
+                if(block == NULL){
+                    this->setState(enum_process_state::aborted);
+                    for(MemoryBlock* memoryBlock: memory_pointers){
+                        memoryManager->free(memoryBlock);
+                    }
 
-            } else {
-                this->memory_pointers.push_back(block);
+                } else {
+                    block->occupied_size = randomNumber;
+                    this->memory_pointers.push_back(block);
+                }
+            } else { //memoria cheia!!
+                abort();
             }
-            return block;
+
         }
+    }
+
+    void abort(){
+        this->setState(enum_process_state::aborted);
     }
 
     int getQuantumCount() {
@@ -83,6 +97,7 @@ public:
     }
 
     int getProcessId() const {
+
         return process_id;
     }
 

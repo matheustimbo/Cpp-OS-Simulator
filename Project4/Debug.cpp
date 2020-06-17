@@ -25,33 +25,29 @@ public:
 
     void print_blocks() {
         cout<<"MEMORIA: TM: " << memoryManager->total_memory << " MO: " << memoryManager->memory_overhead << " AM: " << memoryManager->available_memory << " OM: " << memoryManager->occupied_memory << " MNA: " << memoryManager->memoria_nao_alocada << endl;
-        //cout<<"BLOCOS DE MEMORIA: -------------"<<endl;
         int idBloco = 0;
-        int idProcesso = 0;
-        cout<<"MB: [";
-        /*for(Process* process : scheduler->getReadyQueue()){
-            for(MemoryBlock* memoryBlock: process->getMemoryPointers()){
-                cout <<"[ id: " << idBloco << " , ProcessId: " << getMemoryProcess(memoryBlock)->getProcessId() << " , Memoria: " << memoryBlock->occupied_size << "/" << memoryBlock->total_block_size << " ],";
-                idBloco++;
-            }
-            idProcesso++;
-        }*/
         for(MemoryBlock* memoryBlock : memoryManager->getMemory()){
-
-            cout <<"[ id: " << idBloco << " , pcID: " << getMemoryProcess(memoryBlock)->getProcessId() << " , MM: " << memoryBlock->occupied_size << "/" << memoryBlock->total_block_size << " ],";
+            cout <<"[ id: " << idBloco << " , pcID: " << getMemoryProcessId(memoryBlock) << " , MM: " << memoryBlock->occupied_size << "/" << memoryBlock->total_block_size << " ],";
 
             idBloco++;
         }
         cout <<" ]" <<endl <<endl;
     }
 
-    Process* getMemoryProcess (MemoryBlock* pMemoryBlock){
+    int getMemoryProcessId (MemoryBlock* pMemoryBlock){
+        Process* processoAux = NULL;
         for(Process* process : scheduler->getReadyQueue()){
             for(MemoryBlock* memoryBlock : process->getMemoryPointers()){
                 if(memoryBlock == pMemoryBlock){
-                    return process;
+                    processoAux =  process;
                 }
             }
+        }
+        if (processoAux == nullptr) {
+            return -1;
+        }
+        else {
+            return processoAux->getProcessId();
         }
     }
 
